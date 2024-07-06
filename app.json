@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Vinteg",
+    "slug": "Vinteg",
+    "version": "1.0.0",
+    "sdkVersion": "51.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+       "permissions": [
+      "CAMERA_ROLL",
+      "READ_EXTERNAL_STORAGE",
+      "WRITE_EXTERNAL_STORAGE"
+    ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+      
+    },
+    "plugins": ["expo-build-properties"],
+    "proxy": {
+      "/api": {
+        "target": "http://192.168.1.15:8080", // Adresse de votre serveur backend
+        "secure": false,
+        "changeOrigin": true
+      }
+    }
+  }
+}
