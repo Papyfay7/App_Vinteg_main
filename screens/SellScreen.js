@@ -1,89 +1,138 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Picker, Alert } from 'react-native';
-import axios from 'axios';
+import { View, Text, TextInput, Button, Image, StyleSheet, Alert } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
-const ProductForm = () => {
+const SellScreen = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [brand, setBrand] = useState('');
-  const [condition, setCondition] = useState('');
   const [price, setPrice] = useState('');
+  const [imageURL, setImageURL] = useState(null);
 
-  const handlePublish = async () => {
-    const productData = {
-      title,
-      description,
-      category,
-      brand,
-      condition,
-      price: parseFloat(price), // Ensure price is a number
-    };
-
+  const handleImagePicker = async () => {
     try {
-      const response = await axios.post('http://localhost:8080/api/products', productData);
+      // Demande des permissions pour accéder à la galerie
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-      if (response.status === 201) {
-        Alert.alert('Success', 'Product published successfully!');
-        // Clear form after successful submission
-        setTitle('');
-        setDescription('');
-        setCategory('');
-        setBrand('');
-        setCondition('');
-        setPrice('');
-      } else {
-        throw new Error('Failed to publish product');
+      if (!permissionResult.granted) {
+        Alert.alert('Permission refusée', 'Vous devez autoriser l\'accès à la galerie pour choisir une image.');
+        return;
       }
+
+      // Ouverture de la galerie pour sélectionner une image
+      const pickerResult = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+        base64: true, // Inclus les données de l'image en base64
+      });
+
+      if (pickerResult.cancelled) {
+        console.log('Sélection d\'image annulée');
+        return;
+      }
+
+      // Enregistre l'URI de l'image sélectionnée
+      setImageURL(pickerResult.uri);
+      console.log('Image sélectionnée:', pickerResult.uri);
     } catch (error) {
-      console.error('Error publishing product:', error);
-      Alert.alert('Error', 'Failed to publish product');
+      console.error('Erreur lors de la sélection de l\'image:', error);
     }
   };
 
+  const handleSubmit = () => {
+    // Logique d'envoi du formulaire avec les informations saisies
+    console.log('Formulaire soumis:', { title, description, price, imageURL });
+    Alert.alert('Formulaire soumis', 'Les informations ont été soumises avec succès.');
+  };
+
   return (
-    <View>
+    <View style={styles.container}>
+      <Text style={styles.label}>Titre :</Text>
       <TextInput
+        style={styles.input}
         value={title}
         onChangeText={setTitle}
-        placeholder="Title"
+        placeholder="Entrez le titre du produit"
       />
+
+      <Text style={styles.label}>Description :</Text>
       <TextInput
+        style={[styles.input, styles.multilineInput]}
         value={description}
         onChangeText={setDescription}
-        placeholder="Description"
+        placeholder="Entrez la description du produit"
+        multiline={true}
+        numberOfLines={4}
       />
-      <Picker
-        selectedValue={category}
-        onValueChange={itemValue => setCategory(itemValue)}
-      >
-        <Picker.Item label="Select category..." value="" />
-        <Picker.Item label="Clothing" value="clothing" />
-        <Picker.Item label="Electronics" value="electronics" />
-        {/* Add more categories */}
-      </Picker>
+
+      <Text style={styles.label}>Prix :</Text>
       <TextInput
-        value={brand}
-        onChangeText={setBrand}
-        placeholder="Brand"
-      />
-      <Picker
-        selectedValue={condition}
-        onValueChange={itemValue => setCondition(itemValue)}
-      >
-        <Picker.Item label="Select condition..." value="" />
-        <Picker.Item label="New" value="new" />
-        <Picker.Item label="Used" value="used" />
-      </Picker>
-      <TextInput
+        style={styles.input}
         value={price}
         onChangeText={setPrice}
-        placeholder="Price"
+        placeholder="Entrez le prix du produit"
         keyboardType="numeric"
       />
-      <Button title="Publish" onPress={handlePublish} />
+
+      <View style={styles.imageContainer}>
+        {imageURL ? (
+          <Image
+            source={{ uri: imageURL }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        ) : (
+          <Text>Aucune image sélectionnée</Text>
+        )}
+        <Button title="Choisir une image" onPress={handleImagePicker} color="#007bff" />
+      </View>
+
+      <Button title="Soumettre" onPress={handleSubmit} color="#007bff" />
     </View>
   );
 };
 
-export default ProductForm;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8f9fa',
+    paddingHorizontal: 20,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+    fontWeight: 'bold',
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    marginBottom: 10,
+    paddingHorizontal: 15,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    fontSize: 16,
+    color: '#333',
+  },
+  multilineInput: {
+    height: 120,
+    textAlignVertical: 'top',
+  },
+  imageContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  image: {
+    width: 200,
+    height: 200,
+    resizeMode: 'cover',
+    marginBottom: 10,
+    borderRadius: 10,
+  },
+});
+
+export default SellScreen;

@@ -1,21 +1,28 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Formik } from 'formik';
 
-export default function LoginScreen({ navigation }) {
+export default function RegisterScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Image style={styles.image} source={require('../assets/12892962_5098293.jpg')} />
-      <Text style={styles.header}>Se connecter</Text>
+      <Text style={styles.header}>Let's Get Started</Text>
+      <Text style={styles.subHeader}>Create an account</Text>
       <Formik
-        initialValues={{ email: '', password: '' }}
+        initialValues={{ name: '', email: '', phone: '' }}
         onSubmit={values => console.log(values)}
       >
         {({ handleChange, handleBlur, handleSubmit, values }) => (
           <View style={styles.form}>
             <TextInput
               style={styles.input}
-              placeholder="Email or Mobile"
+              placeholder="Ex. Earl J. Smiley"
+              onChangeText={handleChange('name')}
+              onBlur={handleBlur('name')}
+              value={values.name}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="example@gmail.com"
               keyboardType="email-address"
               onChangeText={handleChange('email')}
               onBlur={handleBlur('email')}
@@ -23,20 +30,20 @@ export default function LoginScreen({ navigation }) {
             />
             <TextInput
               style={styles.input}
-              placeholder="Password"
-              secureTextEntry
-              onChangeText={handleChange('password')}
-              onBlur={handleBlur('password')}
-              value={values.password}
+              placeholder="+91 Enter Mobile Number"
+              keyboardType="phone-pad"
+              onChangeText={handleChange('phone')}
+              onBlur={handleBlur('phone')}
+              value={values.phone}
             />
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Login</Text>
+              <Text style={styles.buttonText}>Register</Text>
             </TouchableOpacity>
           </View>
         )}
       </Formik>
-      <Text style={styles.footer} onPress={() => navigation.navigate('Register')}>
-        Don't have an account? <Text style={styles.footerLink}>Sign Up</Text>
+      <Text style={styles.footer} onPress={() => navigation.navigate('Login')}>
+        Already have an account? <Text style={styles.footerLink}>Sign In</Text>
       </Text>
     </View>
   );
@@ -53,6 +60,10 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
     color: '#000',
+  },
+  subHeader: {
+    fontSize: 16,
+    color: '#666',
     marginVertical: 10,
   },
   form: {
@@ -83,12 +94,5 @@ const styles = StyleSheet.create({
   footerLink: {
     color: '#f57c00',
     fontWeight: 'bold',
-  },
-  image: {
-    width: '100%',
-    height: 200,
-    resizeMode: 'contain',
-    alignSelf: 'center',
-    marginVertical: 20,
   },
 });
