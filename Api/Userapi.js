@@ -12,12 +12,13 @@ const api = axios.create({
 });
 
 // Fonction pour l'inscription
-export const signupUser = async (username, password, email) => {
+export const signupUser = async (username, password, email, phone) => {
   try {
     const response = await api.post('/signup', {
       username: username,
       password: password,
-      email: email
+      email: email,
+      phone: phone,
     });
     console.log('Utilisateur inscrit avec succès:', response.data);
     return response.data;
